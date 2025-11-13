@@ -9,32 +9,32 @@ export async function getUsers(params?: {
   sortBy?: "name" | "email" | "createdAt";
   order?: "asc" | "desc";
 }) {
-  const res = await api.get<User[]>("/users", { params });
+  const res = await api.get<User[]>("/user", { params });
   return res.data;
 }
 
 export async function getUser(id: string) {
-  const res = await api.get<User>(`/users/${id}`);
+  const res = await api.get<User>(`/user/${id}`);
   return res.data;
 }
 
 export async function createUser(payload: Partial<User>) {
-  const res = await api.post<User>("/users", payload);
+  const res = await api.post<User>("/user", payload);
   return res.data;
 }
 
 export async function updateUser(id: string, payload: Partial<User>) {
-  const res = await api.put<User>(`/users/${id}`, payload);
+  const res = await api.put<User>(`/user/${id}`, payload);
   return res.data;
 }
 
 export async function deleteUser(id: string) {
-  await api.delete(`/users/${id}`);
+  await api.delete(`/user/${id}`);
   return id;
 }
 
 export async function bulkDelete(ids: string[]) {
   // Parallel delete; caller will orchestrate optimistic UI + undo
-  await Promise.all(ids.map((id) => api.delete(`/users/${id}`)));
+  await Promise.all(ids.map((id) => api.delete(`/user/${id}`)));
   return ids;
 }
