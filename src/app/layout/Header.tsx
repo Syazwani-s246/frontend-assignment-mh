@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
   const [theme, setTheme] = useState<"light" | "dark">(() =>

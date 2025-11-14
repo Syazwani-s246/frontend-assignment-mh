@@ -5,8 +5,10 @@ export const userFormSchema = z.object({
   email: z.string().email(),
   phoneNumber: z.string().min(5),
   role: z.enum(["Admin", "User", "Guest"]),
-  active: z.boolean(),
-  avatar: z.string().url().optional().or(z.literal("")),
-  bio: z.string().max(500).optional().default(""),
+
+  active: z.boolean().default(true),
+  avatar: z.string().url().or(z.literal("")).default(""),
+  bio: z.string().max(500).default(""),
 });
+
 export type UserFormInput = z.infer<typeof userFormSchema>;

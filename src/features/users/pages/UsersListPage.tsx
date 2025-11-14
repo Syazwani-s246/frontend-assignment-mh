@@ -1,5 +1,5 @@
 import UsersTable from "../components/UsersTable";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function UsersListPage() {
   return (

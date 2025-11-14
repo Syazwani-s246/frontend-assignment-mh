@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { usersKeys } from "../api/users.keys";
 import { getUsers } from "../api/users.api";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function UsersTable() {
   const { data, isLoading, isError, error } = useQuery({

@@ -1,4 +1,4 @@
-import { api } from "../../../lib/axios";
+import { api } from "@/lib/axios";
 import type { User } from "./users.types";
 
 export async function getUsers(params?: {
