@@ -4,7 +4,7 @@ A comprehensive user management application built with React, TypeScript, Tailwi
 
 ## Live Demo
 
-[Live Application URL](#) <!-- Replace with your actual deployment URL -->
+[https://frontend-assigment-mh.netlify.app/](#)
 
 ## Features Implemented
 
