@@ -62,26 +62,26 @@ export default function UsersTable() {
   if (isError) return <div className="text-red-600">Error: {(error as Error).message}</div>;
 
   return (
-    <div className="rounded-md border overflow-x-auto">
+    <div className="w-full max-w-[1600px] mx-auto rounded-md border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Avatar</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
+            <TableHead className="w-[80px]">Avatar</TableHead>
+            <TableHead className="w-[160px]">Name</TableHead>
+            <TableHead className="w-[240px]">Email</TableHead>
+            <TableHead className="w-[140px]">Phone</TableHead>
+            <TableHead className="w-[100px]">Role</TableHead>
+            <TableHead className="w-[100px]">Status</TableHead>
+            <TableHead className="w-[120px]">Created</TableHead>
             <TableHead>Bio</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="w-[140px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data?.map((u) => (
             <TableRow key={u.id}>
               {/* User avatar */}
-              <TableCell>
+              <TableCell className="w-[80px]">
                 <img 
                   src={u.avatar} 
                   alt={u.name} 
@@ -90,17 +90,17 @@ export default function UsersTable() {
               </TableCell>
               
               {/* User name */}
-              <TableCell className="font-medium">{u.name}</TableCell>
+              <TableCell className="font-medium w-[160px]">{u.name}</TableCell>
               
               {/* Contact information */}
-              <TableCell>{u.email}</TableCell>
-              <TableCell>{u.phoneNumber}</TableCell>
+              <TableCell className="w-[240px]">{u.email}</TableCell>
+              <TableCell className="w-[140px] whitespace-nowrap">{u.phoneNumber}</TableCell>
               
               {/* User role */}
-              <TableCell>{u.role}</TableCell>
+              <TableCell className="w-[100px]">{u.role}</TableCell>
               
               {/* Active status badge */}
-              <TableCell>
+              <TableCell className="w-[100px]">
                 <span 
                   className={`inline-flex items-center text-xs px-2 py-1 rounded ${
                     u.active 
@@ -113,7 +113,7 @@ export default function UsersTable() {
               </TableCell>
               
               {/* Account creation date */}
-              <TableCell>
+              <TableCell className="w-[120px]">
                 {new Date(u.createdAt).toLocaleDateString()}
               </TableCell>
               
@@ -125,7 +125,7 @@ export default function UsersTable() {
               </TableCell>
               
               {/* Action buttons */}
-              <TableCell>
+              <TableCell className="w-[140px]">
                 <a 
                   className="text-sm underline mr-2" 
                   href={`/users/${u.id}`}
