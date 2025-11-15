@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   userFormSchema,
@@ -41,12 +41,11 @@ export default function UserFormPage() {
     enabled: isEdit,
     queryKey: isEdit ? usersKeys.detail(id!) : usersKeys.detail("new"),
     queryFn: () => getUser(id!),
-    // Add retry logic for better UX
     retry: 1,
   });
 
   // -----------------------------
-  // FORM CONFIG
+  // FORM CONFIG - EXACT COPY FROM WORKING CODE
   // -----------------------------
   const form = useForm({
     resolver: zodResolver(userFormSchema),
@@ -61,20 +60,38 @@ export default function UserFormPage() {
     },
   });
 
-  // Populate form when editing
+  // -----------------------------
+  // ⭐ THE FIX: Remove 'form' from dependencies!
+  // -----------------------------
   useEffect(() => {
-    if (isEdit && data) {
+    if (data) {
+      // Normalize role to match Select options exactly
+      let cleanRole: "Admin" | "User" | "Guest" = "User";
+      
+      if (data.role) {
+        const roleStr = data.role.toLowerCase();
+        if (roleStr === "admin") {
+          cleanRole = "Admin";
+        } else if (roleStr === "guest") {
+          cleanRole = "Guest";
+        } else {
+          cleanRole = "User";
+        }
+      }
+      
+    //   console.log("Loading user data:", data.role, "→", cleanRole); // Debug log
+      
       form.reset({
-        name: data.name,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        role: (data.role as any) ?? "User",
-        active: data.active,
+        name: data.name ?? "",
+        email: data.email ?? "",
+        phoneNumber: data.phoneNumber ?? "",
+        role: cleanRole,
+        active: data.active ?? true,
         avatar: data.avatar ?? "",
         bio: data.bio ?? "",
       });
     }
-  }, [isEdit, data, form]);
+  }, [data]); // ✅ ONLY 'data' - NOT 'form', NOT 'isEdit'
 
   // -----------------------------
   // MUTATIONS WITH OPTIMISTIC UPDATES
@@ -82,18 +99,12 @@ export default function UserFormPage() {
   const createMut = useMutation({
     mutationFn: createUser,
     onMutate: async () => {
-      // Show loading toast
       toast.loading("Creating user...", { id: "create-user" });
     },
     onSuccess: (newUser) => {
-      // Dismiss loading toast
       toast.dismiss("create-user");
       toast.success("User created successfully!");
-      
-      // Optimistically add to cache
       qc.setQueryData<any[]>(usersKeys.list(), (old = []) => [...old, newUser]);
-      
-      // Navigate after short delay for better UX
       setTimeout(() => nav("/users"), 500);
     },
     onError: (err: any) => {
@@ -102,7 +113,6 @@ export default function UserFormPage() {
       toast.error(message);
     },
     onSettled: () => {
-      // Ensure data is fresh
       qc.invalidateQueries({ queryKey: usersKeys.all });
     },
   });
@@ -110,22 +120,15 @@ export default function UserFormPage() {
   const updateMut = useMutation({
     mutationFn: (payload: UserFormInput) => updateUser(id!, payload),
     onMutate: async (updatedData) => {
-      // Show loading toast
       toast.loading("Updating user...", { id: "update-user" });
-      
-      // Cancel outgoing queries
       await qc.cancelQueries({ queryKey: usersKeys.detail(id!) });
-      
-      // Snapshot previous value
       const previous = qc.getQueryData(usersKeys.detail(id!));
       
-      // Optimistically update detail view
       qc.setQueryData(usersKeys.detail(id!), (old: any) => ({
         ...old,
         ...updatedData,
       }));
       
-      // Optimistically update list view
       qc.setQueryData<any[]>(usersKeys.list(), (old = []) =>
         old.map((user) => (user.id === id ? { ...user, ...updatedData } : user))
       );
@@ -135,14 +138,11 @@ export default function UserFormPage() {
     onSuccess: () => {
       toast.dismiss("update-user");
       toast.success("User updated successfully!");
-      
-      // Navigate after short delay
       setTimeout(() => nav("/users"), 500);
     },
     onError: (err: any, _vars, context) => {
       toast.dismiss("update-user");
       
-      // Rollback on error
       if (context?.previous) {
         qc.setQueryData(usersKeys.detail(id!), context.previous);
       }
@@ -158,7 +158,6 @@ export default function UserFormPage() {
       }
     },
     onSettled: () => {
-      // Refetch to ensure consistency
       qc.invalidateQueries({ queryKey: usersKeys.all });
     },
   });
@@ -220,7 +219,6 @@ export default function UserFormPage() {
   // -----------------------------
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      {/* Header with back button */}
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -312,24 +310,41 @@ export default function UserFormPage() {
                   />
                 </div>
 
-                {/* ROLE */}
+                {/* ⭐ ROLE - FIXED WITH CONTROLLER */}
                 <div className="space-y-2">
                   <Label htmlFor="role">
                     Role <span className="text-red-500">*</span>
                   </Label>
-                  <Select
-                    value={form.watch("role")}
-                    onValueChange={(v) => form.setValue("role", v as any)}
-                  >
-                    <SelectTrigger id="role">
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Admin">Admin</SelectItem>
-                      <SelectItem value="User">User</SelectItem>
-                      <SelectItem value="Guest">Guest</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  
+                  <Controller
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => {
+                    //   console.log("Select rendering with field.value:", field.value);
+                      return (
+                        <Select 
+                          value={field.value || "User"} 
+                          onValueChange={(val) => {
+                            // console.log("Select onChange:", val);
+                            // ⭐ CRITICAL FIX: Ignore empty values
+                            if (val && val.trim() !== "") {
+                              field.onChange(val);
+                            }
+                          }}
+                        >
+                          <SelectTrigger id="role">
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Admin">Admin</SelectItem>
+                            <SelectItem value="User">User</SelectItem>
+                            <SelectItem value="Guest">Guest</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      );
+                    }}
+                  />
+                  {/* <p className="text-xs text-gray-500">Current value: {form.watch("role")}</p> */}
                 </div>
               </div>
             </div>
