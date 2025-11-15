@@ -1,23 +1,25 @@
-import { useEffect } from "react";
+import { createContext, useEffect, useState} from "react";
 import type { ReactNode } from "react";
-import { useState } from "react";
+
+export const ThemeContext = createContext({
+  theme: "light",
+  setTheme: (_t: "light" | "dark") => {},
+});
 
 export default function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<"light" | "dark">(() =>
-    (localStorage.getItem("theme") as "light" | "dark") || "light"
+  const [theme, setTheme] = useState<"light" | "dark">(
+    () => (localStorage.getItem("theme") as "light" | "dark") || "light"
   );
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
   return (
-    <div data-theme={theme}>
-      {children}
-    </div>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <div data-theme={theme}>{children}</div>
+    </ThemeContext.Provider>
   );
 }
-

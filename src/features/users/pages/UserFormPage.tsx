@@ -368,7 +368,7 @@ export default function UserFormPage() {
                 <Label htmlFor="bio">Bio</Label>
                 <textarea
                   id="bio"
-                  className="w-full border rounded-md p-3 min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  className="w-full bg-background text-foreground border border-input rounded-md p-3 min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
                   placeholder="Tell us about yourself..."
                   {...form.register("bio")}
                 />
@@ -385,18 +385,47 @@ export default function UserFormPage() {
               </h3>
 
               {/* ACTIVE STATUS */}
-              <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/50">
+              <div 
+                className={`
+                  flex items-center justify-between p-4 rounded-lg border transition-all duration-300
+                  ${form.watch("active") 
+                    ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900" 
+                    : "bg-gray-50 dark:bg-gray-900/30 border-gray-200 dark:border-gray-800"
+                  }
+                `}
+              >
                 <div className="space-y-0.5">
-                  <Label className="text-base">Account Status</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {form.watch("active")
-                      ? "This account is currently active"
-                      : "This account is currently inactive"}
-                  </p>
+                  <Label className="text-base font-semibold">
+                    Account Status
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className={`
+                        w-2 h-2 rounded-full transition-colors duration-300
+                        ${form.watch("active") 
+                          ? "bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" 
+                          : "bg-gray-400 dark:bg-gray-600"
+                        }
+                      `}
+                    />
+                    <p 
+                      className={`
+                        text-sm font-medium transition-colors duration-300
+                        ${form.watch("active")
+                          ? "text-green-700 dark:text-green-400"
+                          : "text-gray-600 dark:text-gray-400"}
+                      `}
+                    >
+                      {form.watch("active")
+                        ? "This account is currently active"
+                        : "This account is currently inactive"}
+                    </p>
+                  </div>
                 </div>
                 <Switch
                   checked={form.watch("active")}
                   onCheckedChange={(v) => form.setValue("active", v)}
+                  className="data-[state=checked]:bg-green-600"
                 />
               </div>
             </div>
