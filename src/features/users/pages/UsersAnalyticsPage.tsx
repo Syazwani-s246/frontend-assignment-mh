@@ -235,7 +235,7 @@ export default function UsersAnalyticsPage() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {analytics.statusData.map((entry, index) => (
+                  {analytics.statusData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={STATUS_COLORS[index % STATUS_COLORS.length]}
