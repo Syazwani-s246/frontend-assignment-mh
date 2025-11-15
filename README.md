@@ -4,7 +4,7 @@ A comprehensive user management application built with React, TypeScript, Tailwi
 
 ## Live Demo
 
-[https://frontend-assigment-mh.netlify.app/](#)
+[https://frontend-assigment-mh.netlify.app/]
 
 ## Features Implemented
 
@@ -75,7 +75,7 @@ A comprehensive user management application built with React, TypeScript, Tailwi
 - Auto-dismiss with appropriate durations
 - Non-intrusive placement
 
-### 🎨 Additional Features
+### Additional Features
 
 #### 8. **User Analytics Dashboard** (`/users/analytics`)
 - Real-time data visualization using Recharts
